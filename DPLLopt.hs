@@ -148,7 +148,7 @@ flags = [ Option ['v'] [] (NoArg Verbose)
 parseCmds :: [String] -> IO ([Flag], [String])
 parseCmds argv = 
     if null argv
-       then do putStrLn $ "Please enter one of the following option:\n" ++ usageInfo header flags
+       then do putStrLn $ "Please enter one of the following options:\n" ++ usageInfo header flags
                exitFailure
        else
             case getOpt Permute flags argv of
