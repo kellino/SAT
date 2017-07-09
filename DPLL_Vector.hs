@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 module Main where
 
@@ -32,6 +31,10 @@ type Formula = Vector Clause
 type Solution = Vector Literal
 
 data SAT = SAT {formula :: Formula, solution :: Solution} deriving Show
+
+----------
+-- DPLL --
+----------
 
 dpll :: SAT -> Maybe Solution
 dpll s
@@ -70,8 +73,9 @@ simplify f l =
     let xs = filter (\x -> l `notElem` x) f
      in map (\x -> filter (/= flipBit l) x) xs
 
---simpl (filter (\x -> l `notElem` x) f) l
---where simpl c l' =  filter (/= flipBit l') c
+---------------
+-- Utilities --
+---------------
 
 safeHead :: Maybe (Vector a) -> Maybe a
 safeHead Nothing = Nothing
@@ -86,10 +90,7 @@ vecNub :: (Eq a) => Vector a -> Vector a
 vecNub = foldr (\x acc -> if x `elem` acc then acc else x `cons` acc) empty
 
 solve :: Formula -> Maybe Solution
---solve = dpll $ flip SAT empty
 solve f = dpll $ SAT { formula = f, solution = empty }
-
--- Just ([1,2,3] :: Solution) --  dpll . flip SAT (fromList [])
 
 ----------------
 -- CNF Parser --
@@ -169,6 +170,8 @@ parseCmds argv =
 -- Main --
 ----------
 
+-- | there's some horrible code duplication here. I should probably try to sort it out at some
+-- point...
 process :: Flag -> [FilePath] -> IO ()
 process arg files =
     case arg of
